@@ -1,5 +1,0 @@
-/* Top level CSS. Should contain only the imports for tailwind */
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;

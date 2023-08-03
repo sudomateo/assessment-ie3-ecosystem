@@ -1,35 +1,53 @@
-# Infrastructure Engineer 3 - Ecosystem Take-Home Assessment
+# Taskly
 
-This is the repository for the System Initiative Infrastructure Engineer III - Ecosystem take-home assessment. It is designed to verify that:
+Taskly is an application that allows users to sign in and create tasks. It is
+also used by [System Initiative](https://www.systeminit.com/) as an
+[assessment](https://github.com/systeminit/assessment-ie3-ecosystem) for their
+Infrastructure Engineer III - Ecosystem role.
 
-* You have proficiency in designing cloud architecture and implementing infrastructure automation
-* You have proficiency with multiple cloud providers
+I have previously submitted the
+[assessment](https://github.com/systeminit/assessment-ie3) for the
+Infrastructure Engineer III role. To prevent repetitve work, I use the container
+images created there for this assessment.
 
-We use a take-home assessment so that you can have your most productive environment at hand. Use whatever editor, operating system, etc. you like. Google to your heart's content.
+## Implementations
 
-Please spend no more than 4 hours on this assessment.
+This assessment asked for 3 implementations that deploy Taskly across at least 2
+different infrastructure providers.
 
-## What you'll be doing
+### Implementation 01: DigitalOcean App Platform
 
-We created a fake company called Taskly, and you’ve been hired as an Infrastructure Engineer! Taskly is a new company reinventing the task list, and the engineering team has been busy working toward a beta launch. They’re ready to get this product into the world and start getting feedback! We need to decide which cloud provider and subsequent infrastructure architecture we will use for production. We want you to implement a few different options so we can choose what production will look like for Taskly!
+This implementation deploys Taskly on [DigitalOcean App
+Platform](https://www.digitalocean.com/products/app-platform). This was the
+implementation that I used when I submitted the
+[assessment](https://github.com/systeminit/assessment-ie3) for the
+Infrastructure Engineer III role. This implementation is in between a serverless
+deployment and a managed container service in that the operator does not have to
+manage their own infrastructure but it's not as powerful as some of the managed
+container services from other infrastructure providers. I chose this
+implementation because it was simple to stand up quickly and provided the
+ability to configure and scale Taskly if necessary.
 
-Taskly is split into two components - a `frontend` and a `backend`. Each component has its own README with information about the components, including full instructions on how to run it (including link checks and automated tests).
+The following directories contain the implementation code.
 
-To get started, [fork this repository](https://docs.github.com/en/get-started/quickstart/fork-a-repo). If you prefer, you can make your fork private and add `britmyerss`,
-`fnichol`, `stack72`, and `mahirl` as collaborators. When you've finished, let us know via email with a link to your fork. We'll review it and get back to you!
+- [`implementation01`](implementation01)
 
-Have fun!
+Here's the architecture diagram for this implementation.
 
+```mermaid
+flowchart LR
+    subgraph app [DigitalOcean App Platform]
+        ingress[Ingress]
 
-## How you'll be building it
+        subgraph components [Components]
+            frontend[Frontend]
+            backend[Backend]
+        end
 
-Your submission should include 3 implementations for a cloud architecture to run Taskly, including at least 2 cloud providers.  For example, you could show 2 implementations of what Taskly might look like in AWS, and 1 in GCP, or one implementation in each of AWS, GCP, and Azure, etc. Also,  while there is no pipeline built yet for Taskly in the repo, for this assessment, you can assume that there is a CD pipeline that will run your automation.
+        ingress-->|/|frontend
+        ingress-->|/api|backend
+    end
 
-We want you to use whatever infrastructure automation tooling and cloud providers you’re most comfortable with. Please don't worry about actually standing up infrastructure and deploying Taskly, as we don't want you paying out of pocket for this assessment, and we don't want you to restrict your design to using the free\inexpensive tiers. 
-
-We also want you to include a README, that helps us understand your decisions, why you made them, which implementation is your preferred one and why, and any additional context that you think would help give insight into your decision-making process.
-
-
-## Good luck!
-
-Thank you so much for taking the time to do the assessment. We're looking forward to reviewing your work!
+    client[Client]
+    client-->ingress
+```
