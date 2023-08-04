@@ -51,3 +51,50 @@ flowchart LR
     client[Client]
     client-->ingress
 ```
+
+### Implementation 02: Azure Kubernetes Service
+
+This implementation deploys Taskly on [Azure Kubernetes
+Service](https://azure.microsoft.com/en-us/products/kubernetes-service/). This
+implementation deploys an Azure Application Gateway and a Kubernetes cluster
+using Azure Kubernetes Service. The Kubernetes cluster is configured to use the
+Application Gateway as its ingress. Taskly runs as two deployments (frontend and
+backend) that are exposed to the Kubernetes cluster via ClusterIP services.
+These services are then exposed to clients via the Application Gateway ingress
+using path-based routing to route requests to `/` to the frontend and requests
+to `/api` to the backend. I chose this implementation as a way to explore Azure
+Kubernetes Service since it's the managed container orchestation service that
+I'm the least familiar with.
+
+The following directories contain the implementation code.
+
+- [`implementation02`](implementation02)
+
+Here's the architecture diagram for this implementation.
+
+```mermaid
+flowchart LR
+    subgraph k8s [Azure Kubernetes Service]
+        subgraph services [Services]
+            frontendSvc[taskly-frontend]
+            backendSvc[taskly-backend]
+        end
+
+        subgraph deployments [Deployments]
+            frontendDep[taskly-frontend]
+            backendDep[taskly-backend]
+        end
+
+        ingressController[Ingress Controller]
+    end
+
+    ingress[Azure Application Gateway]
+    client[Client]
+
+    client-->ingress
+    ingress-->|/|frontendSvc
+    ingress-->|/api|backendSvc
+    frontendSvc --> frontendDep
+    backendSvc --> backendDep
+    ingressController-->|manages|ingress
+```
