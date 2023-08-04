@@ -98,3 +98,47 @@ flowchart LR
     backendSvc --> backendDep
     ingressController-->|manages|ingress
 ```
+
+### Implementation 03: AWS EC2
+
+This implementation deploys Taskly on [AWS EC2](https://aws.amazon.com/ec2/).
+This implementation deploys EC2 instances for both the frontend and the backend
+services using autocaling groups and launch templates. These EC2 instances spin
+up and are configured using user data, where Docker is installed and the
+application container is launched. The EC2 instances are then added to their
+respective load balancer target groups so that the application load balancer can
+use path-based routing to route requests to `/` to the frontend target group and
+requests to `/api` to the backend target group. I chose this implementation
+because not everyone is ready to move to a managed service (app platform,
+container orchestation, etc.). There are a ton of people that are still using
+virtual machines for their infrastructure. I also wanted to showcase that I
+understood how to use user data. Now due to time constraints I didn't implement
+TLS or create immutable EC2 images using something like Packer, but those can be
+implemented quickly if desired.
+
+The following directories contain the implementation code.
+
+- [`implementation03`](implementation03)
+
+Here's the architecture diagram for this implementation.
+
+```mermaid
+flowchart LR
+    client[Client]
+
+    subgraph ec2 [AWS EC2]
+        ingress[AWS Application Load Balancer]
+
+        subgraph frontendGroup [AWS Autoscaling Group - Frontend]
+            frontendSvc[taskly-frontend]
+        end
+
+        subgraph backendGroup [AWS Autoscaling Group - Backend]
+            backendSvc[taskly-backend]
+        end
+    end
+
+    client-->ingress
+    ingress-->|/|frontendSvc
+    ingress-->|/api|backendSvc
+```
